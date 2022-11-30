@@ -20,7 +20,7 @@ namespace laba4
         }
 
         public static int vMin, vMax, wMin, wMax;
-        public static Item Generate()
+        private static Item Generate()
         {
             Random rnd = new Random();
             int v = rnd.Next(vMin, vMax + 1);
