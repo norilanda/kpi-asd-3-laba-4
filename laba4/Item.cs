@@ -19,12 +19,20 @@ namespace laba4
             this._weight = w;
         }
 
-        public static Item Generate(int vMin, int vMax, int wMin, int wMax)
+        public static int vMin, vMax, wMin, wMax;
+        public static Item Generate()
         {
             Random rnd = new Random();
             int v = rnd.Next(vMin, vMax + 1);
             int w = rnd.Next(wMin, wMax + 1);
             return new Item(v, w);
+        }
+        public static Item[] GenerateItems(int n)
+        {
+            Item[] items = new Item[n];
+            for (int i=0; i<n; i++)            
+                items[i] = Generate();
+            return items;
         }
     }
 }
