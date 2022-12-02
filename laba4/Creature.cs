@@ -16,6 +16,7 @@ namespace laba4
 
         public int F => _F;
         public int P => _P;
+        public bool[] Chromosome => _chromosome;
         public Creature(bool[] chromosome)
         {
             this._chromosome = chromosome;
