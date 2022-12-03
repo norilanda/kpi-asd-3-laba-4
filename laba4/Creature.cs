@@ -29,6 +29,18 @@ namespace laba4
                 }                
             }
         }
-        
+        public void CalcPAndF()
+        {
+            _F = 0;
+            _P = 0;
+            for (int i = 0; i < _chromosome.Length; i++)
+            {
+                if (_chromosome[i])
+                {
+                    _F += allItems[i].Value;
+                    _P += allItems[i].Weight;
+                }
+            }
+        }
     }
 }
