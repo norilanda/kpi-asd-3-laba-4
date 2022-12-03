@@ -34,5 +34,13 @@ namespace laba4
                 items[i] = Generate();
             return items;
         }
+        public static Item[] InitItems(int[] values, int[] weights)
+        {
+            int n = values.Length;
+            Item[] items = new Item[n];
+            for (int i = 0; i < n; i++)
+                items[i] = new Item(values[i], weights[i]);                
+            return items;
+        }
     }
 }

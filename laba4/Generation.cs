@@ -6,6 +6,8 @@
         private Creature bestCreature, worstCreature;
         private int n;
         private int MaxWeight;
+        private int iterationNumber;
+        public List<int> F_ValuesAfter20Iterations;
 
         private int genNum1;
         private int genNum2;
@@ -13,20 +15,19 @@
 
         private double mutationPossibility;
 
-        public Generation(int n, int P)
+        public Generation(int n, int P, int iterations)
         {
-            // initialization
-            Item.vMin = 2; Item.vMax = 25;
-            Item.wMin = 1; Item.wMax = 10;
+            // initialization            
             this.n = n;
             this.MaxWeight = P;
+            this.iterationNumber = iterations;
+            F_ValuesAfter20Iterations = new List<int>();
 
             genNum1 = (int)(0.3 * n); //30%
             genNum2 = (int)(0.4 * n); //40%
             genNum3 = n - genNum1 - genNum2;    //30%
             mutationPossibility = 0.1;  //10%
 
-            Creature.allItems = Item.GenerateItems(n);
             _currPopulation = new List<Creature>();
             CreateInitialPopulation(n);
             bestCreature = FindBestCreature();
@@ -44,9 +45,15 @@
         }
         public void GeneticAlgorithm()
         {
-            const int iterationNumber = 100;
-            for (int i=0; i<iterationNumber; i++)
+            int count20Iterations = 0;
+            for (int i=0; i< this.iterationNumber; i++)
             {
+                if (count20Iterations == 20)
+                {
+                    F_ValuesAfter20Iterations.Add(bestCreature.F);
+                    count20Iterations = 0;
+                }
+                count20Iterations++;
                 Creature parent1, parent2;
                 Creature child1, child2;
                 Selection(out parent1, out parent2);
@@ -132,6 +139,7 @@
                         newChromosome[i] = true;
                         currF += Creature.allItems[i].Value;
                         currP += Creature.allItems[i].Weight;
+                        break;
                     }
                 }
             }
