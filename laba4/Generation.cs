@@ -56,7 +56,7 @@
                 if (child1.P <= MaxWeight)//check if alive
                 {
                     child1 = Mutation(child1);
-                    // local improvements !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    child1 = LocalImprovement(child1);
                     AddChildToPopulation(child1);
                 }
 
@@ -64,10 +64,9 @@
                 if (child2.P <= MaxWeight)//check if alive
                 {
                     child2 = Mutation(child2);
-                    // local improvements !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    child2 = LocalImprovement(child2);
                     AddChildToPopulation(child2);
                 }
-
             }
         }
         private void Selection(out Creature parent1, out Creature parent2)
@@ -111,7 +110,7 @@
                 newChromosome[gen1] = child.Chromosome[gen2];
                 newChromosome[gen2] = newChromosome[gen1]; ;
                 Creature mutatedChild = new Creature(newChromosome);
-                if (mutatedChild.P > MaxWeight) //if child1 is dead
+                if (mutatedChild.P > MaxWeight) //if mutatedChild is dead
                     return child;
                 else 
                     return mutatedChild;
@@ -121,7 +120,22 @@
         private Creature LocalImprovement(Creature child)
         {
             bool[] newChromosome = new bool[n];
-            return child;
+            int currF = child.F;
+            int currP = child.P;
+            Array.Copy(child.Chromosome, newChromosome, n);
+            for (int i = 0; i < n; i++)
+            {
+                if (newChromosome[i] == false)
+                {
+                    if(currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
+                    {
+                        newChromosome[i] = true;
+                        currF = Creature.allItems[i].Value;
+                        currP = Creature.allItems[i].Weight;
+                    }
+                }
+            }
+            return new Creature(newChromosome);
         }
         private void AddChildToPopulation(Creature child)   //add child and remove the worst
         {           
