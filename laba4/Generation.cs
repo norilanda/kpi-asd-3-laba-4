@@ -17,7 +17,7 @@
         {
             // initialization
             Item.vMin = 2; Item.vMax = 25;
-            Item.wMax = 1; Item.wMax = 10;
+            Item.wMin = 1; Item.wMax = 10;
             this.n = n;
             this.MaxWeight = P;
 
@@ -130,8 +130,8 @@
                     if(currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
                     {
                         newChromosome[i] = true;
-                        currF = Creature.allItems[i].Value;
-                        currP = Creature.allItems[i].Weight;
+                        currF += Creature.allItems[i].Value;
+                        currP += Creature.allItems[i].Weight;
                     }
                 }
             }
@@ -171,5 +171,6 @@
             }
             return worst;
         }
+        public Creature GetBest() => bestCreature;
     }
 }

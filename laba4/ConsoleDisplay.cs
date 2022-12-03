@@ -22,5 +22,21 @@ namespace laba4
             Console.WriteLine("Value " + itemValues);
             Console.WriteLine("Weight" + itemWeight);
         }
+
+        public static void DisplaySolution(Creature bestCreature)
+        {
+            string itemNumbers, itemValues;
+            itemNumbers = itemValues = "";
+            for (int i = 0; i < bestCreature.Chromosome.Length; i++)
+            {
+                itemNumbers += Convert.ToString(i).PadLeft(4) + "|";
+                itemValues += Convert.ToString(Convert.ToInt32(bestCreature.Chromosome[i])).PadLeft(4) + "|";
+            }
+            Console.WriteLine("Number" + itemNumbers);
+            Console.WriteLine("Value " + itemValues);
+
+            Console.WriteLine("F = " + bestCreature.F);
+            Console.WriteLine("P = " + bestCreature.P);
+        }
     }
 }
