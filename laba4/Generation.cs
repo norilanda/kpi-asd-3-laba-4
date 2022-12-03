@@ -48,18 +48,26 @@
             for (int i=0; i<iterationNumber; i++)
             {
                 Creature parent1, parent2;
+                Creature child1, child2;
                 Selection(out parent1, out parent2);
-                Creature child = Crossover(parent1, parent2);
-                if (child.P > MaxWeight)//check if alive
-                    continue;
-                child = Mutation(child);
-                // local improvements !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                if (bestCreature.F < child.F)
-                    bestCreature = child;
-                if (worstCreature.F > child.F)
-                    worstCreature = child;
-                _currPopulation.Add(child);
-                _currPopulation.Remove(worstCreature);
+                Crossover(parent1, parent2, out child1, out child2);
+
+                // for the first child
+                if (child1.P <= MaxWeight)//check if alive
+                {
+                    child1 = Mutation(child1);
+                    // local improvements !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    AddChildToPopulation(child1);
+                }
+
+                // for the second child
+                if (child2.P <= MaxWeight)//check if alive
+                {
+                    child2 = Mutation(child2);
+                    // local improvements !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    AddChildToPopulation(child2);
+                }
+
             }
         }
         private void Selection(out Creature parent1, out Creature parent2)
@@ -71,41 +79,59 @@
                 parent2 = _currPopulation[rnd.Next(0, _currPopulation.Count)];
             } while (parent1 == parent2);
         }
-        private Creature Crossover(Creature parent1, Creature parent2)
+        private void Crossover(Creature parent1, Creature parent2, out Creature child1, out Creature child2)
         {
-            bool[] childChromosome = new bool[n];
-            Array.Copy(parent1.Chromosome, 0, childChromosome, 0, genNum1);
-            Array.Copy(parent2.Chromosome, genNum1, childChromosome, genNum1, genNum2);
-            Array.Copy(parent1.Chromosome, genNum1 + genNum2, childChromosome, genNum1 + genNum2, genNum3);
+            //  creating 2 childrens
+            bool[] childChromosome1 = new bool[n];
+            bool[] childChromosome2 = new bool[n];
+            Array.Copy(parent1.Chromosome, 0, childChromosome1, 0, genNum1);
+            Array.Copy(parent2.Chromosome, genNum1, childChromosome1, genNum1, genNum2);
+            Array.Copy(parent1.Chromosome, genNum1 + genNum2, childChromosome1, genNum1 + genNum2, genNum3);
 
-            return new Creature(childChromosome);
+            Array.Copy(parent2.Chromosome, 0, childChromosome2, 0, genNum1);
+            Array.Copy(parent1.Chromosome, genNum1, childChromosome2, genNum1, genNum2);
+            Array.Copy(parent2.Chromosome, genNum1 + genNum2, childChromosome2, genNum1 + genNum2, genNum3);
+
+            child1 = new Creature(childChromosome1);
+            child2 = new Creature(childChromosome2);
         }
         private Creature Mutation(Creature child)
         {
             Random rnd = new Random();
             if (rnd.NextDouble() <= mutationPossibility)
             {                
-                bool[] child1Chromosome = new bool[n];
-                Array.Copy(child.Chromosome, child1Chromosome, n);
+                bool[] newChromosome = new bool[n];
+                Array.Copy(child.Chromosome, newChromosome, n);
                 int gen1, gen2;
                 gen1 = rnd.Next(0, n);
                 do
                 {
                     gen2 = rnd.Next(0, n);
                 } while (gen1 == gen2);
-                child1Chromosome[gen1] = child.Chromosome[gen2];
-                child1Chromosome[gen2] = child1Chromosome[gen1]; ;
-                Creature child1 = new Creature(child1Chromosome);
-                if (child1.P > MaxWeight) //if child1 is dead
+                newChromosome[gen1] = child.Chromosome[gen2];
+                newChromosome[gen2] = newChromosome[gen1]; ;
+                Creature mutatedChild = new Creature(newChromosome);
+                if (mutatedChild.P > MaxWeight) //if child1 is dead
                     return child;
                 else 
-                    return child1;
+                    return mutatedChild;
             }
             return child;
         }
         private Creature LocalImprovement(Creature child)
         {
+            bool[] newChromosome = new bool[n];
             return child;
+        }
+        private void AddChildToPopulation(Creature child)   //add child and remove the worst
+        {           
+            if (bestCreature.F < child.F)
+                bestCreature = child;
+            if (worstCreature.F > child.F)
+                worstCreature = child;
+            _currPopulation.Add(child);
+            _currPopulation.Remove(worstCreature);
+            worstCreature = FindWorstCreature();    //finding a new worst creature
         }
         private Creature FindBestCreature()
         {
