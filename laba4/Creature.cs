@@ -10,9 +10,9 @@ namespace laba4
     {
         public static Item[] allItems;
 
-        private bool[] _chromosome;
-        private int _F; //value
-        private int _P; //weight
+        protected bool[] _chromosome;
+        protected int _F; //value
+        protected int _P; //weight
 
         public int F => _F;
         public int P => _P;
@@ -29,6 +29,13 @@ namespace laba4
                 }                
             }
         }
+        //public Creature(Creature creature) 
+        //{
+        //    this._chromosome = new bool[creature._chromosome.Length];
+        //    Array.Copy(creature._chromosome, this._chromosome, this._chromosome.Length);
+        //    this._F = creature._F;
+        //    this._P = creature._P;
+        //}
         public void CalcPAndF()
         {
             _F = 0;

@@ -157,10 +157,10 @@
         }
         private Creature FindBestCreature()
         {
-            Creature best = _currPopulation[0];
+            Creature best = new Creature(new bool[n]);
             for (int i = 0; i < _currPopulation.Count; i++)
             {
-                if (_currPopulation[i].F > best.F)
+                if (_currPopulation[i].F > best.F && _currPopulation[i].P <= MaxWeight)
                 {
                     best = _currPopulation[i];
                 }                    

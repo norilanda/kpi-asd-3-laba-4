@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace laba4
 {
-    public class ConsoleDisplay
+    public static class ConsoleDisplay
     {
         public static void DisplayAllItems(Item[] items)
         {
