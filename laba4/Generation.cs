@@ -4,6 +4,11 @@ namespace laba4
 {
     public class Generation
     {
+        public enum SelectionMethod
+        {
+            BestAndRandom,
+            Tournament
+        }
         public enum LocalImprovementMethod
         {
             Superset,
@@ -22,11 +27,13 @@ namespace laba4
         private int genNum3;
 
         private double mutationPossibility;
+        SelectionMethod selectMethod;
         LocalImprovementMethod imprMethod;
 
-        public Generation(int n, int P, int iterations, int imprMethod)
+        public Generation(int n, int P, int iterations, int selectMethod, int imprMethod)
         {
             // initialization
+            this.selectMethod = (SelectionMethod)selectMethod;
             this.imprMethod = (LocalImprovementMethod)imprMethod;
             this.n = n;
             this.MaxWeight = P;
@@ -40,7 +47,7 @@ namespace laba4
 
             _currPopulation = new List<Creature>();
             CreateInitialPopulation(n);
-            bestCreature = FindBestCreature();
+            bestCreature = FindBestCreature(_currPopulation);
             worstCreature = FindWorstCreature();
         }
         private void CreateInitialPopulation(int n)
@@ -88,6 +95,28 @@ namespace laba4
         }
         private void Selection(out Creature parent1, out Creature parent2)
         {
+            switch (selectMethod)
+            {
+                case SelectionMethod.Tournament:
+                    {
+                        S_Tournament(out parent1, out parent2);
+                        break;
+                    }
+                case SelectionMethod.BestAndRandom:
+                    {
+                        S_BestAndRandom(out parent1, out parent2);
+                        break;
+                    }  
+                default:
+                    {
+                        parent1 = _currPopulation[0];
+                        parent2 = _currPopulation[1];
+                        break;
+                    }
+            }
+        }
+        private void S_BestAndRandom(out Creature parent1, out Creature parent2)
+        {
             Random rnd = new Random();
             parent1 = bestCreature;
             do
@@ -95,6 +124,35 @@ namespace laba4
                 parent2 = _currPopulation[rnd.Next(0, _currPopulation.Count)];
             } while (parent1 == parent2);
         }
+        private void S_Tournament(out Creature parent1, out Creature parent2)
+        {
+            int setNumber = 6;
+            if (setNumber > n)
+                setNumber = n;
+            Random rnd= new Random();
+            List<Creature> subList = new List<Creature>();
+            for (int i=0; i< setNumber; i++)
+            {
+                int randNumb = rnd.Next();
+                if (!subList.Contains(_currPopulation[i]))
+                    subList.Add(_currPopulation[i]);
+                else
+                    i--;
+            }
+            parent1 = FindBestCreature(subList);
+            subList.Remove(parent1);
+            parent2 = FindBestCreature(subList);
+        }
+        private void S_Proportional(out Creature parent1, out Creature parent2)
+        {
+            Random rnd = new Random();
+            while(true)
+            {
+                break;
+                /// Finish!!!!!!!!!!!!!!!!!!!!
+            }
+        }
+
         private void Crossover(Creature parent1, Creature parent2, out Creature child1, out Creature child2)
         {
             //  creating 2 childrens
@@ -232,14 +290,14 @@ namespace laba4
             _currPopulation.Remove(worstCreature);
             worstCreature = FindWorstCreature();    //finding a new worst creature
         }
-        private Creature FindBestCreature()
+        private Creature FindBestCreature(List<Creature> population)
         {
             Creature best = new Creature(new bool[n]);
-            for (int i = 0; i < _currPopulation.Count; i++)
+            for (int i = 0; i < population.Count; i++)
             {
-                if (_currPopulation[i].F > best.F && _currPopulation[i].P <= MaxWeight)
+                if (population[i].F > best.F && population[i].P <= MaxWeight)
                 {
-                    best = _currPopulation[i];
+                    best = population[i];
                 }                    
             }
             return best;

@@ -29,14 +29,7 @@ namespace laba4
                     _P += allItems[i].Weight;
                 }                
             }
-        }
-        //public Creature(Creature creature) 
-        //{
-        //    this._chromosome = new bool[creature._chromosome.Length];
-        //    Array.Copy(creature._chromosome, this._chromosome, this._chromosome.Length);
-        //    this._F = creature._F;
-        //    this._P = creature._P;
-        //}
+        }   
         public void CalcPAndF()
         {
             _F = 0;

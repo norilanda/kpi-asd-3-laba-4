@@ -6,6 +6,7 @@ int P = 10;
 int iterations = 600;
 Item.vMin = 2; Item.vMax = 30;
 Item.wMin = 1; Item.wMax = 25;
+int selectMethod = 1; // 0 - BestAndRandom, 1 - Tournament
 int imprMethod = 2; // 0 - Superset, 1 - Subtitute, 2 - LI_Hybrid
 Creature.allItems = Item.GenerateItems(n);
 
@@ -17,7 +18,7 @@ Creature.allItems = Item.GenerateItems(n);
 //Creature.allItems = Item.InitItems(new int[] { 13,7,29,24,25,29,3,15,19,21,24,3,15,24,23,7,21,8,17,21}, 
 //                                   new int[] { 3,21,15,17,4,21,2,18,16,18,6,13,8,18,23,20,24,2,25,6 });
 
-Generation g = new Generation(n, P, iterations, imprMethod);
+Generation g = new Generation(n, P, iterations, selectMethod, imprMethod);
 g.GeneticAlgorithm();
 
 ConsoleDisplay.DisplayAllItems(Creature.allItems);
