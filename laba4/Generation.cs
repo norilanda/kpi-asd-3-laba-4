@@ -63,7 +63,7 @@
                 if (child1.P <= MaxWeight)//check if alive
                 {
                     child1 = Mutation(child1);
-                    child1 = LocalImprovement(child1);
+                    child1 = LI_Subtitute(child1);
                     AddChildToPopulation(child1);
                 }
 
@@ -71,7 +71,7 @@
                 if (child2.P <= MaxWeight)//check if alive
                 {
                     child2 = Mutation(child2);
-                    child2 = LocalImprovement(child2);
+                    child2 = LI_Subtitute(child2);
                     AddChildToPopulation(child2);
                 }
             }
@@ -137,9 +137,37 @@
                     if(currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
                     {
                         newChromosome[i] = true;
-                        currF += Creature.allItems[i].Value;
-                        currP += Creature.allItems[i].Weight;
+                        //currF += Creature.allItems[i].Value;
+                        //currP += Creature.allItems[i].Weight;
                         break;
+                    }
+                }
+            }
+            return new Creature(newChromosome);
+        }
+        private Creature LI_Subtitute(Creature child)
+        {
+            bool[] newChromosome = new bool[n];
+            int currF = child.F;
+            int currP = child.P;
+            Array.Copy(child.Chromosome, newChromosome, n);
+            for (int i = 0; i < n; i++)
+            {
+                if (newChromosome[i] == false)
+                {
+                    for (int j=0; j < n; j++)
+                    {
+                        if (newChromosome[j] == true)
+                        {
+                            int tempP = currP + Creature.allItems[i].Weight - Creature.allItems[j].Weight;
+                            int tempF = currF + Creature.allItems[i].Value - Creature.allItems[j].Value;
+                            if (tempP <= MaxWeight && tempF > currF)
+                            {
+                                newChromosome[i] = true;
+                                newChromosome[j] = false;
+                                break;
+                            }
+                        }
                     }
                 }
             }

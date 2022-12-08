@@ -3,7 +3,7 @@ using laba4.Testing;
 
 int n = 20;
 int P = 10;
-int iterations = 500;
+int iterations = 600;
 Item.vMin = 2; Item.vMax = 30;
 Item.wMin = 1; Item.wMax = 25;
 Creature.allItems = Item.GenerateItems(n);
