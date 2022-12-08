@@ -1,7 +1,15 @@
-﻿namespace laba4
+﻿using System.Reflection.Metadata;
+
+namespace laba4
 {
     public class Generation
     {
+        public enum LocalImprovementMethod
+        {
+            Superset,
+            Subtitute,
+            Hybrid //(theory)
+        }
         private List<Creature> _currPopulation;
         private Creature bestCreature, worstCreature;
         private int n;
@@ -14,10 +22,12 @@
         private int genNum3;
 
         private double mutationPossibility;
+        LocalImprovementMethod imprMethod;
 
-        public Generation(int n, int P, int iterations)
+        public Generation(int n, int P, int iterations, int imprMethod)
         {
-            // initialization            
+            // initialization
+            this.imprMethod = (LocalImprovementMethod)imprMethod;
             this.n = n;
             this.MaxWeight = P;
             this.iterationNumber = iterations;
@@ -63,7 +73,7 @@
                 if (child1.P <= MaxWeight)//check if alive
                 {
                     child1 = Mutation(child1);
-                    child1 = LI_Subtitute(child1);
+                    child1 = LocalImprovement(child1);
                     AddChildToPopulation(child1);
                 }
 
@@ -71,7 +81,7 @@
                 if (child2.P <= MaxWeight)//check if alive
                 {
                     child2 = Mutation(child2);
-                    child2 = LI_Subtitute(child2);
+                    child2 = LocalImprovement(child2);
                     AddChildToPopulation(child2);
                 }
             }
@@ -126,26 +136,56 @@
         }
         private Creature LocalImprovement(Creature child)
         {
+           switch (imprMethod)
+            {
+                case LocalImprovementMethod.Superset:
+                    return LI_Superset(child);
+                case LocalImprovementMethod.Subtitute:
+                    return LI_Subtitute(child);
+                case LocalImprovementMethod.Hybrid:
+                    return LI_Hybrid(child);
+                default:
+                    return child;
+            }
+        }
+        private Creature LI_Superset(Creature child)    //local improvement method
+        {
             bool[] newChromosome = new bool[n];
             int currF = child.F;
             int currP = child.P;
             Array.Copy(child.Chromosome, newChromosome, n);
-            for (int i = 0; i < n; i++)
+            Random rnd = new Random();
+            if (rnd.Next(0,1) == 0)
             {
-                if (newChromosome[i] == false)
+                for (int i = 0; i < n; i++)
                 {
-                    if(currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
+                    if (newChromosome[i] == false)
                     {
-                        newChromosome[i] = true;
-                        //currF += Creature.allItems[i].Value;
-                        //currP += Creature.allItems[i].Weight;
-                        break;
+                        if (currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
+                        {
+                            newChromosome[i] = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = n-1; i >=0; i--)
+                {
+                    if (newChromosome[i] == false)
+                    {
+                        if (currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
+                        {
+                            newChromosome[i] = true;
+                            break;
+                        }
                     }
                 }
             }
             return new Creature(newChromosome);
         }
-        private Creature LI_Subtitute(Creature child)
+        private Creature LI_Subtitute(Creature child)   //local improvement method
         {
             bool[] newChromosome = new bool[n];
             int currF = child.F;
@@ -172,6 +212,15 @@
                 }
             }
             return new Creature(newChromosome);
+        }
+
+        private Creature LI_Hybrid(Creature child)
+        {
+            const double LIMIT = 0.4;
+            Random rnd= new Random();
+            if (rnd.NextDouble() < LIMIT)
+                return LI_Superset(child);
+            else return LI_Subtitute(child);
         }
         private void AddChildToPopulation(Creature child)   //add child and remove the worst
         {           

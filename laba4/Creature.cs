@@ -19,7 +19,8 @@ namespace laba4
         public bool[] Chromosome => _chromosome;
         public Creature(bool[] chromosome)
         {
-            this._chromosome = chromosome;
+            this._chromosome = new bool[chromosome.Length];
+            Array.Copy(chromosome, this._chromosome, this._chromosome.Length);
             for (int i=0; i<_chromosome.Length; i++)
             {
                 if (_chromosome[i])
