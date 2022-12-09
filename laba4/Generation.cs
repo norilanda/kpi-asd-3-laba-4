@@ -157,8 +157,7 @@ namespace laba4
             subList = ChooseSublist(setNumber);
             int indexOfParent1 = subList.IndexOfValue(parent1);
             if (indexOfParent1 != -1)
-                subList.RemoveAt(indexOfParent1);
-           //subList.Remove(parent1);//avoiding choosing the same parent twice
+                subList.RemoveAt(indexOfParent1);//avoiding choosing the same parent twice
             parent2 = subList.Last().Value;
         }
         private SortedList<int, Creature> ChooseSublist(int setNumber)
@@ -204,13 +203,12 @@ namespace laba4
             if (i >= _currPopulation.Count)
                 i = _currPopulation.Count - 1;
 
-
             return i;
         }
 
         private void Crossover(Creature parent1, Creature parent2, out Creature child1, out Creature child2)
         {
-            //  creating 2 childrens
+            //  creating 2 children
             bool[] childChromosome1 = new bool[n];
             bool[] childChromosome2 = new bool[n];
             Array.Copy(parent1.Chromosome, 0, childChromosome1, 0, genNum1);
@@ -321,14 +319,7 @@ namespace laba4
                                 Creature ch = new Creature(newChromosome);
                                 if (ch.P > MaxWeight)
                                 {
-                                    return child;
-                                    //foreach (bool b in child.Chromosome)
-                                    //    Console.Write(b +" ");
-                                    //Console.WriteLine("Substitute" + " currP=" + currP + " W+= " + Creature.allItems[i].Weight + " W-= " + Creature.allItems[j].Weight + " ch.P " + ch.P + " i= " + i + " j= " + j + " tempP= " + tempP);
-                                    //Creature ch1 = new Creature(newChromosome);
-                                    //foreach (bool b in newChromosome)
-                                    //    Console.Write(b + " ");
-                                    //Console.WriteLine("\n");
+                                    return child;                                   
                                 }
                                    
                                 break;
@@ -358,11 +349,8 @@ namespace laba4
             }
             if (bestCreature.F < child.F)
                 bestCreature = child;
-            //if (worstCreature.F > child.F)
-            //    worstCreature = child;
             _currPopulation.Add(child.F, child);
             _currPopulation.RemoveAt(0);
-            //worstCreature = FindWorstCreature();    //finding a new worst creature
         }
 
         private int CalcFinessSum()
@@ -371,31 +359,7 @@ namespace laba4
             for(int i=0; i< _currPopulation.Count; i++)
                 sum += _currPopulation.ElementAt(i).Value.F;            
             return sum;
-        }
-        //private Creature FindBestCreature(List<Creature> population)
-        //{
-        //    Creature best = new Creature(new bool[n]);
-        //    for (int i = 0; i < population.Count; i++)
-        //    {
-        //        if (population[i].F > best.F && population[i].P <= MaxWeight)
-        //        {
-        //            best = population[i];
-        //        }                    
-        //    }
-        //    return best;
-        //}    
-        //private Creature FindWorstCreature()
-        //{
-        //    Creature worst = _currPopulation[0];
-        //    for (int i = 0; i < _currPopulation.Count; i++)
-        //    {
-        //        if (_currPopulation[i].F < worst.F)
-        //        {
-        //            worst = _currPopulation[i];
-        //        }
-        //    }
-        //    return worst;
-        //}
+        }       
         public Creature GetBest() => bestCreature;
     }
 }
