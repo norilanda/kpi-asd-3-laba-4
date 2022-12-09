@@ -6,7 +6,7 @@ int P = 25;
 int iterations = 600;
 Item.vMin = 2; Item.vMax = 30;
 Item.wMin = 1; Item.wMax = 25;
-int selectMethod = 0; // 0 - BestAndRandom, 1 - Tournament
+int selectMethod = 2; // 0 - BestAndRandom, 1 - Tournament, 2 - Proportionate
 int imprMethod = 2; // 0 - Superset, 1 - Subtitute, 2 - LI_Hybrid
 Creature.allItems = Item.GenerateItems(n);
 

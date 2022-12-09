@@ -9,7 +9,8 @@ namespace laba4
         public enum SelectionMethod
         {
             BestAndRandom,
-            Tournament
+            Tournament,
+            Proportionate
         }
         public enum LocalImprovementMethod
         {
@@ -31,7 +32,8 @@ namespace laba4
         private double mutationPossibility;
         SelectionMethod selectMethod;
         LocalImprovementMethod imprMethod;
-        int setNumber;//var for tournament selection
+        int setNumber;//var for Tournament selection
+        int sumFitness;//var for Proportionate selection
 
         public Generation(int n, int P, int iterations, int selectMethod, int imprMethod=2)
         {
@@ -61,8 +63,11 @@ namespace laba4
                     case < 20: setNumber = (int)(n * 0.4); break;
                     default: setNumber = (int)(n * 0.2); break;
                 }               
-            }          
-
+            }        
+            else if(this.selectMethod == SelectionMethod.Proportionate)
+            {
+                sumFitness = CalcFinessSum();
+            }
         }
         private void CreateInitialPopulation(int n)
         {
@@ -121,7 +126,12 @@ namespace laba4
                     {
                         S_BestAndRandom(out parent1, out parent2);
                         break;
-                    }  
+                    }
+                case SelectionMethod.Proportionate:
+                    {
+                        S_Proportionate(out parent1, out parent2);
+                        break;
+                    }
                 default:
                     {
                         parent1 = _currPopulation.ElementAt(0).Value;
@@ -165,15 +175,38 @@ namespace laba4
             }
             return subList;
         }
-        //private void S_Proportional(out Creature parent1, out Creature parent2)
-        //{
-        //    Random rnd = new Random();
-        //    while (true)
-        //    {
-        //        break;
-        //        /// Finish!!!!!!!!!!!!!!!!!!!!
-        //    }
-        //}
+        private void S_Proportionate(out Creature parent1, out Creature parent2)
+        {
+            int p1Index = ProportionalGetIndex();
+            int p2Index;
+            do
+            {
+                p2Index = ProportionalGetIndex();
+            } while (p1Index == p2Index);
+            parent1 = _currPopulation.ElementAt(p1Index).Value;
+            parent2 = _currPopulation.ElementAt(p2Index).Value;
+        }
+        private int ProportionalGetIndex()
+        {
+            Random rnd = new Random();
+            int randNumber;
+            if (sumFitness > 0)
+                randNumber = rnd.Next(0, sumFitness);
+            else
+                randNumber = rnd.Next(0, _currPopulation.Count - 1);
+            int i = 0;
+            int currSum = 0;
+            while (currSum < randNumber && i < _currPopulation.Count)
+            {
+                currSum += _currPopulation.ElementAt(i).Value.F;
+                i++;
+            }
+            if (i >= _currPopulation.Count)
+                i = _currPopulation.Count - 1;
+
+
+            return i;
+        }
 
         private void Crossover(Creature parent1, Creature parent2, out Creature child1, out Creature child2)
         {
@@ -317,7 +350,12 @@ namespace laba4
             else return LI_Subtitute(child);
         }
         private void AddChildToPopulation(Creature child)   //add child and remove the worst
-        {           
+        {
+            if (this.selectMethod == SelectionMethod.Proportionate)
+            {
+                sumFitness += child.F;
+                sumFitness -= _currPopulation.ElementAt(0).Value.F;
+            }
             if (bestCreature.F < child.F)
                 bestCreature = child;
             //if (worstCreature.F > child.F)
@@ -325,6 +363,14 @@ namespace laba4
             _currPopulation.Add(child.F, child);
             _currPopulation.RemoveAt(0);
             //worstCreature = FindWorstCreature();    //finding a new worst creature
+        }
+
+        private int CalcFinessSum()
+        {
+            int sum = 0;
+            for(int i=0; i< _currPopulation.Count; i++)
+                sum += _currPopulation.ElementAt(i).Value.F;            
+            return sum;
         }
         //private Creature FindBestCreature(List<Creature> population)
         //{
