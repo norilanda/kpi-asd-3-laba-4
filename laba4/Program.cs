@@ -23,8 +23,8 @@ Console.WriteLine("Solution:");
 ConsoleDisplay.DisplaySolution(g.GetBest());
 
 List<int> Fs = g.F_ValuesAfter20Iterations;
-Console.WriteLine("F changes: ");
-for(int i=0; i< Fs.Count; i++)
+Console.WriteLine("\nF value after every 20 itereations: ");
+for (int i = 0; i < Fs.Count; i++)
     Console.Write(Fs[i] + " ");
 Console.WriteLine("\n");
 

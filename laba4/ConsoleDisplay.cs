@@ -39,7 +39,7 @@ namespace laba4
                     Console.WriteLine("Number" + itemNumbers);
                     Console.WriteLine("Value " + itemValues);
                     Console.WriteLine("Weight" + itemWeight);
-                    Console.WriteLine("---------------");
+                    Console.WriteLine(new string('-', 160));
                     itemsAdded = 0;
                     itemNumbers = itemValues = itemWeight = "";
                 }
@@ -66,7 +66,7 @@ namespace laba4
                 {
                     Console.WriteLine("Number" + itemNumbers);
                     Console.WriteLine("Value " + itemValues);
-                    Console.WriteLine("---------------");
+                    Console.WriteLine(new string ('-', 160));
                     itemsAdded = 0;
                     itemNumbers = itemValues = "";
                 }
