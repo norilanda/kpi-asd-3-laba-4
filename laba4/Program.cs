@@ -1,8 +1,8 @@
 ﻿using laba4;
 using laba4.Testing;
 
-int n = 100;
-int P = 250;
+int n = 20;
+int P = 50;
 int iterations = 1000;
 Item.vMin = 2; Item.vMax = 30;
 Item.wMin = 1; Item.wMax = 25;
@@ -24,8 +24,17 @@ ConsoleDisplay.DisplaySolution(g.GetBest());
 
 List<int> Fs = g.F_ValuesAfter20Iterations;
 Console.WriteLine("\nF value after every 20 itereations: ");
+int j = 0;
 for (int i = 0; i < Fs.Count; i++)
+{
+    if (j > 25)
+    {
+        Console.WriteLine();
+        j = 0;
+    }
     Console.Write(Fs[i] + " ");
+    j++;
+}
 Console.WriteLine("\n");
 
 if (n <= 20)
