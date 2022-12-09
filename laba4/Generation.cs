@@ -3,6 +3,24 @@ using System.Security.Cryptography;
 
 namespace laba4
 {
+    public class DuplicateKeyComparer<TKey>
+                :
+             IComparer<TKey> where TKey : IComparable
+    {
+        #region IComparer<TKey> Members
+
+        public int Compare(TKey x, TKey y)
+        {
+            int result = x.CompareTo(y);
+
+            if (result == 0)
+                return 1; // Handle equality as being greater. Note: this will break Remove(key) or
+            else          // IndexOfKey(key) since the comparer never returns 0 to signal key equality
+                return result;
+        }
+
+        #endregion
+    }
     public class Generation
     {
         public enum SelectionMethod
@@ -16,8 +34,8 @@ namespace laba4
             Subtitute,
             Hybrid //(theory)
         }
-        private List<Creature> _currPopulation;
-        private Creature bestCreature, worstCreature;
+        private SortedList<int, Creature> _currPopulation;
+        private Creature bestCreature;//, worstCreature;
         private int n;
         private int MaxWeight;
         private int iterationNumber;
@@ -47,10 +65,10 @@ namespace laba4
             genNum3 = n - genNum1 - genNum2;    //30%
             mutationPossibility = 0.1;  //10%
 
-            _currPopulation = new List<Creature>();
+            _currPopulation = new SortedList<int, Creature>(new DuplicateKeyComparer<int>());
             CreateInitialPopulation(n);
-            bestCreature = FindBestCreature(_currPopulation);
-            worstCreature = FindWorstCreature();
+            bestCreature = _currPopulation.Last().Value;
+            //worstCreature = FindWorstCreature();
 
             if (this.selectMethod == SelectionMethod.Tournament)
             {
@@ -60,8 +78,7 @@ namespace laba4
                     case < 20: setNumber = (int)(n * 0.4); break;
                     default: setNumber = (int)(n * 0.2); break;
                 }               
-            }
-           
+            }          
 
         }
         private void CreateInitialPopulation(int n)
@@ -71,7 +88,8 @@ namespace laba4
             {
                 chromosome = new bool[n];
                 chromosome[i] = true;
-                _currPopulation.Add(new Creature(chromosome));
+                Creature creature = new Creature(chromosome);
+                _currPopulation.Add(creature.F, creature);
             }
         }
         public void GeneticAlgorithm()
@@ -94,7 +112,9 @@ namespace laba4
                 if (child1.P <= MaxWeight)//check if alive
                 {
                     child1 = Mutation(child1);
+                    if (child1.P > MaxWeight) Console.WriteLine("1Mutation");
                     child1 = LocalImprovement(child1);
+                    if (child1.P > MaxWeight) Console.WriteLine("1LocalImprovement");
                     AddChildToPopulation(child1);
                 }
 
@@ -102,7 +122,9 @@ namespace laba4
                 if (child2.P <= MaxWeight)//check if alive
                 {
                     child2 = Mutation(child2);
+                    if (child2.P > MaxWeight) Console.WriteLine("2Mutation");
                     child2 = LocalImprovement(child2);
+                    if (child2.P > MaxWeight) Console.WriteLine("2LocalImprovement");
                     AddChildToPopulation(child2);
                 }
             }
@@ -123,8 +145,8 @@ namespace laba4
                     }  
                 default:
                     {
-                        parent1 = _currPopulation[0];
-                        parent2 = _currPopulation[1];
+                        parent1 = _currPopulation.ElementAt(0).Value;
+                        parent2 = _currPopulation.ElementAt(1).Value;
                         break;
                     }
             }
@@ -135,41 +157,44 @@ namespace laba4
             parent1 = bestCreature;
             do
             {
-                parent2 = _currPopulation[rnd.Next(0, _currPopulation.Count)];
+                parent2 = _currPopulation.ElementAt(rnd.Next(0, _currPopulation.Count)).Value;
             } while (parent1 == parent2);
         }
         private void S_Tournament(out Creature parent1, out Creature parent2)
         {
            
-            List<Creature> subList = ChooseSublist(setNumber);
-            parent1 = FindBestCreature(subList);
-            subList = ChooseSublist(setNumber);            
-            subList.Remove(parent1);//avoiding choosing the same parent twice
-            parent2 = FindBestCreature(subList);
+            SortedList<int, Creature> subList = ChooseSublist(setNumber);
+            parent1 = subList.Last().Value;
+            subList = ChooseSublist(setNumber);
+            int indexOfParent1 = subList.IndexOfValue(parent1);
+            if (indexOfParent1 != -1)
+                subList.RemoveAt(indexOfParent1);
+           //subList.Remove(parent1);//avoiding choosing the same parent twice
+            parent2 = subList.Last().Value;
         }
-        private List<Creature> ChooseSublist(int setNumber)
+        private SortedList<int, Creature> ChooseSublist(int setNumber)
         {
             Random rnd = new Random();
-            List<Creature> subList = new List<Creature>();
+            SortedList<int, Creature> subList = new SortedList<int, Creature>(new DuplicateKeyComparer<int>());
             for (int i = 0; i < setNumber; i++)
             {
                 int randNumb = rnd.Next();
-                if (!subList.Contains(_currPopulation[i]))
-                    subList.Add(_currPopulation[i]);
+                if (!subList.ContainsValue(_currPopulation.ElementAt(randNumb).Value))
+                    subList.Add(_currPopulation.ElementAt(randNumb).Value.F, _currPopulation.ElementAt(randNumb).Value);
                 else
                     i--;
             }
             return subList;
         }
-        private void S_Proportional(out Creature parent1, out Creature parent2)
-        {
-            Random rnd = new Random();
-            while(true)
-            {
-                break;
-                /// Finish!!!!!!!!!!!!!!!!!!!!
-            }
-        }
+        //private void S_Proportional(out Creature parent1, out Creature parent2)
+        //{
+        //    Random rnd = new Random();
+        //    while(true)
+        //    {
+        //        break;
+        //        /// Finish!!!!!!!!!!!!!!!!!!!!
+        //    }
+        //}
 
         private void Crossover(Creature parent1, Creature parent2, out Creature child1, out Creature child2)
         {
@@ -201,7 +226,7 @@ namespace laba4
                     gen2 = rnd.Next(0, n);
                 } while (gen1 == gen2);
                 newChromosome[gen1] = child.Chromosome[gen2];
-                newChromosome[gen2] = newChromosome[gen1]; ;
+                newChromosome[gen2] = child.Chromosome[gen1];//
                 Creature mutatedChild = new Creature(newChromosome);
                 if (mutatedChild.P > MaxWeight) //if mutatedChild is dead
                     return child;
@@ -262,18 +287,18 @@ namespace laba4
             return new Creature(newChromosome);
         }
         private Creature LI_Subtitute(Creature child)   //local improvement method
-        {
+        {            
             bool[] newChromosome = new bool[n];
             int currF = child.F;
             int currP = child.P;
             Array.Copy(child.Chromosome, newChromosome, n);
             for (int i = 0; i < n; i++)
             {
-                if (newChromosome[i] == false)
+                if (child.Chromosome[i] == false)
                 {
                     for (int j=0; j < n; j++)
                     {
-                        if (newChromosome[j] == true)
+                        if (child.Chromosome[j] == true)
                         {
                             int tempP = currP + Creature.allItems[i].Weight - Creature.allItems[j].Weight;
                             int tempF = currF + Creature.allItems[i].Value - Creature.allItems[j].Value;
@@ -281,12 +306,26 @@ namespace laba4
                             {
                                 newChromosome[i] = true;
                                 newChromosome[j] = false;
+                                Creature ch = new Creature(newChromosome);
+                                if (ch.P > MaxWeight)
+                                {
+                                    return child;
+                                    //foreach (bool b in child.Chromosome)
+                                    //    Console.Write(b +" ");
+                                    //Console.WriteLine("Substitute" + " currP=" + currP + " W+= " + Creature.allItems[i].Weight + " W-= " + Creature.allItems[j].Weight + " ch.P " + ch.P + " i= " + i + " j= " + j + " tempP= " + tempP);
+                                    //Creature ch1 = new Creature(newChromosome);
+                                    //foreach (bool b in newChromosome)
+                                    //    Console.Write(b + " ");
+                                    //Console.WriteLine("\n");
+                                }
+                                   
                                 break;
                             }
                         }
                     }
                 }
             }
+           
             return new Creature(newChromosome);
         }
 
@@ -302,36 +341,36 @@ namespace laba4
         {           
             if (bestCreature.F < child.F)
                 bestCreature = child;
-            if (worstCreature.F > child.F)
-                worstCreature = child;
-            _currPopulation.Add(child);
-            _currPopulation.Remove(worstCreature);
-            worstCreature = FindWorstCreature();    //finding a new worst creature
+            //if (worstCreature.F > child.F)
+            //    worstCreature = child;
+            _currPopulation.Add(child.F, child);
+            _currPopulation.RemoveAt(0);
+            //worstCreature = FindWorstCreature();    //finding a new worst creature
         }
-        private Creature FindBestCreature(List<Creature> population)
-        {
-            Creature best = new Creature(new bool[n]);
-            for (int i = 0; i < population.Count; i++)
-            {
-                if (population[i].F > best.F && population[i].P <= MaxWeight)
-                {
-                    best = population[i];
-                }                    
-            }
-            return best;
-        }    
-        private Creature FindWorstCreature()
-        {
-            Creature worst = _currPopulation[0];
-            for (int i = 0; i < _currPopulation.Count; i++)
-            {
-                if (_currPopulation[i].F < worst.F)
-                {
-                    worst = _currPopulation[i];
-                }
-            }
-            return worst;
-        }
+        //private Creature FindBestCreature(List<Creature> population)
+        //{
+        //    Creature best = new Creature(new bool[n]);
+        //    for (int i = 0; i < population.Count; i++)
+        //    {
+        //        if (population[i].F > best.F && population[i].P <= MaxWeight)
+        //        {
+        //            best = population[i];
+        //        }                    
+        //    }
+        //    return best;
+        //}    
+        //private Creature FindWorstCreature()
+        //{
+        //    Creature worst = _currPopulation[0];
+        //    for (int i = 0; i < _currPopulation.Count; i++)
+        //    {
+        //        if (_currPopulation[i].F < worst.F)
+        //        {
+        //            worst = _currPopulation[i];
+        //        }
+        //    }
+        //    return worst;
+        //}
         public Creature GetBest() => bestCreature;
     }
 }
