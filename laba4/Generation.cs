@@ -164,7 +164,7 @@ namespace laba4
             SortedList<int, Creature> subList = new SortedList<int, Creature>(new DuplicateKeyComparer<int>());
             for (int i = 0; i < setNumber; i++)
             {
-                int randNumb = rnd.Next();
+                int randNumb = rnd.Next(0, _currPopulation.Count - 1);
                 if (!subList.ContainsValue(_currPopulation.ElementAt(randNumb).Value))
                     subList.Add(_currPopulation.ElementAt(randNumb).Value.F, _currPopulation.ElementAt(randNumb).Value);
                 else
