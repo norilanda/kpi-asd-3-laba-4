@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata;
+using System.Security.Cryptography;
 
 namespace laba4
 {
@@ -29,6 +30,7 @@ namespace laba4
         private double mutationPossibility;
         SelectionMethod selectMethod;
         LocalImprovementMethod imprMethod;
+        int setNumber;//var for tournament selection
 
         public Generation(int n, int P, int iterations, int selectMethod, int imprMethod)
         {
@@ -49,6 +51,18 @@ namespace laba4
             CreateInitialPopulation(n);
             bestCreature = FindBestCreature(_currPopulation);
             worstCreature = FindWorstCreature();
+
+            if (this.selectMethod == SelectionMethod.Tournament)
+            {
+                switch (n)
+                {
+                    case < 5: setNumber = 2; break;
+                    case < 20: setNumber = (int)(n * 0.4); break;
+                    default: setNumber = (int)(n * 0.2); break;
+                }               
+            }
+           
+
         }
         private void CreateInitialPopulation(int n)
         {
@@ -126,12 +140,18 @@ namespace laba4
         }
         private void S_Tournament(out Creature parent1, out Creature parent2)
         {
-            int setNumber = 6;
-            if (setNumber > n)
-                setNumber = n;
-            Random rnd= new Random();
+           
+            List<Creature> subList = ChooseSublist(setNumber);
+            parent1 = FindBestCreature(subList);
+            subList = ChooseSublist(setNumber);            
+            subList.Remove(parent1);//avoiding choosing the same parent twice
+            parent2 = FindBestCreature(subList);
+        }
+        private List<Creature> ChooseSublist(int setNumber)
+        {
+            Random rnd = new Random();
             List<Creature> subList = new List<Creature>();
-            for (int i=0; i< setNumber; i++)
+            for (int i = 0; i < setNumber; i++)
             {
                 int randNumb = rnd.Next();
                 if (!subList.Contains(_currPopulation[i]))
@@ -139,9 +159,7 @@ namespace laba4
                 else
                     i--;
             }
-            parent1 = FindBestCreature(subList);
-            subList.Remove(parent1);
-            parent2 = FindBestCreature(subList);
+            return subList;
         }
         private void S_Proportional(out Creature parent1, out Creature parent2)
         {
