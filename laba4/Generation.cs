@@ -259,13 +259,12 @@ namespace laba4
         }
         private Creature LI_Superset(Creature child)    //local improvement method
         {
+            Creature childImproved = child;
             bool[] newChromosome = new bool[n];
             int currF = child.F;
             int currP = child.P;
             Array.Copy(child.Chromosome, newChromosome, n);
             Random rnd = new Random();
-            if (rnd.Next(0,1) == 0)
-            {
                 for (int i = 0; i < n; i++)
                 {
                     if (newChromosome[i] == false)
@@ -273,29 +272,18 @@ namespace laba4
                         if (currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
                         {
                             newChromosome[i] = true;
-                            break;
+                            Creature ch = new Creature(newChromosome);
+                            if (childImproved.F < ch.F)
+                                childImproved = ch;
+                            newChromosome[i] = false;
                         }
                     }
                 }
-            }
-            else
-            {
-                for (int i = n-1; i >=0; i--)
-                {
-                    if (newChromosome[i] == false)
-                    {
-                        if (currP + Creature.allItems[i].Weight <= MaxWeight && currF + Creature.allItems[i].Value > currF)// if alive and have better F
-                        {
-                            newChromosome[i] = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            return new Creature(newChromosome);
+            return childImproved;
         }
         private Creature LI_Subtitute(Creature child)   //local improvement method
-        {            
+        {
+            Creature childImproved = child;
             bool[] newChromosome = new bool[n];
             int currF = child.F;
             int currP = child.P;
@@ -315,24 +303,20 @@ namespace laba4
                                 newChromosome[i] = true;
                                 newChromosome[j] = false;
                                 Creature ch = new Creature(newChromosome);
-                                if (ch.P > MaxWeight)
-                                {
-                                    return child;                                   
-                                }
-                                   
-                                break;
+                                    if (ch.F > childImproved.F) childImproved = ch;
+                                newChromosome[i] = false;
+                                newChromosome[j] = true;
                             }
                         }
                     }
                 }
             }
-           
-            return new Creature(newChromosome);
+            return childImproved;
         }
 
         private Creature LI_Hybrid(Creature child)
         {
-            const double LIMIT = 0.4;
+            const double LIMIT = 0.5;
             Random rnd= new Random();
             if (rnd.NextDouble() < LIMIT)
                 return LI_Superset(child);
