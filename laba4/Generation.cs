@@ -3,24 +3,7 @@ using System.Security.Cryptography;
 
 namespace laba4
 {
-    public class DuplicateKeyComparer<TKey>
-                :
-             IComparer<TKey> where TKey : IComparable
-    {
-        #region IComparer<TKey> Members
-
-        public int Compare(TKey x, TKey y)
-        {
-            int result = x.CompareTo(y);
-
-            if (result == 0)
-                return 1; // Handle equality as being greater. Note: this will break Remove(key) or
-            else          // IndexOfKey(key) since the comparer never returns 0 to signal key equality
-                return result;
-        }
-
-        #endregion
-    }
+    
     public class Generation
     {
         public enum SelectionMethod
@@ -50,7 +33,7 @@ namespace laba4
         LocalImprovementMethod imprMethod;
         int setNumber;//var for tournament selection
 
-        public Generation(int n, int P, int iterations, int selectMethod, int imprMethod)
+        public Generation(int n, int P, int iterations, int selectMethod, int imprMethod=2)
         {
             // initialization
             this.selectMethod = (SelectionMethod)selectMethod;
@@ -112,9 +95,7 @@ namespace laba4
                 if (child1.P <= MaxWeight)//check if alive
                 {
                     child1 = Mutation(child1);
-                    if (child1.P > MaxWeight) Console.WriteLine("1Mutation");
                     child1 = LocalImprovement(child1);
-                    if (child1.P > MaxWeight) Console.WriteLine("1LocalImprovement");
                     AddChildToPopulation(child1);
                 }
 
@@ -122,9 +103,7 @@ namespace laba4
                 if (child2.P <= MaxWeight)//check if alive
                 {
                     child2 = Mutation(child2);
-                    if (child2.P > MaxWeight) Console.WriteLine("2Mutation");
                     child2 = LocalImprovement(child2);
-                    if (child2.P > MaxWeight) Console.WriteLine("2LocalImprovement");
                     AddChildToPopulation(child2);
                 }
             }
@@ -189,7 +168,7 @@ namespace laba4
         //private void S_Proportional(out Creature parent1, out Creature parent2)
         //{
         //    Random rnd = new Random();
-        //    while(true)
+        //    while (true)
         //    {
         //        break;
         //        /// Finish!!!!!!!!!!!!!!!!!!!!
