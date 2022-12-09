@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 
 namespace laba4
 {
-    
     public class Generation
     {
         public enum SelectionMethod
@@ -53,7 +52,6 @@ namespace laba4
             _currPopulation = new SortedList<int, Creature>(new DuplicateKeyComparer<int>());
             CreateInitialPopulation(n);
             bestCreature = _currPopulation.Last().Value;
-            //worstCreature = FindWorstCreature();
 
             if (this.selectMethod == SelectionMethod.Tournament)
             {
