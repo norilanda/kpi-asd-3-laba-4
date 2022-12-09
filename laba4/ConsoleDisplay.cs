@@ -12,7 +12,7 @@ namespace laba4
             ref int vMin, ref int vMax, ref int wMin, ref int wMax, ref int selectMethod, ref int imprMethod)
         {
             Console.Write("\nItem number = " + n + ";   knapsack max weight = " + P + ";  number of iterations to terminate: "+ iterations + 
-                ";\nitems values in range (" + vMin +", " + vMax + ");   items weights in range (" + wMin + ", " + wMax + ";    Selection method: ");
+                ";\nitems values in range (" + vMin +", " + vMax + ");   items weights in range (" + wMin + ", " + wMax + ");    Selection method: ");
             switch (imprMethod)
             {
                 case 0: Console.WriteLine("Superset\n"); break;
