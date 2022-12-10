@@ -17,6 +17,10 @@ namespace laba4.Testing
     //n = 10;
     //Creature.allItems = Item.InitItems(new int[] { 8,8,7,6,3,4,18,2,20,2 },
     //                                   new int[] { 12,14,8,10,3,3,6,12,20,22 });
+
+    //n = 20;
+    //Creature.allItems = Item.InitItems(new int[] { 22, 28, 21, 13, 8, 12, 28, 12, 29, 22, 22, 14, 4, 9, 3, 30, 13, 12, 30, 26 },
+    //                                   new int[] { 19, 22, 22, 4, 22, 8, 9, 6, 21, 7, 2, 6, 2, 11, 21, 24, 2, 2, 25, 10 });
     public class Test
     {
         // class for testing the solution with a little number of items by using ...

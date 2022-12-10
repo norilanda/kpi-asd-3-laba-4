@@ -18,7 +18,7 @@ namespace laba4
             Hybrid //(theory)
         }
         private SortedList<int, Creature> _currPopulation;
-        private Creature bestCreature;//, worstCreature;
+        private Creature bestCreature;
         private int n;
         private int MaxWeight;
         private int iterationNumber;
@@ -33,6 +33,8 @@ namespace laba4
         LocalImprovementMethod imprMethod;
         int setNumber;//var for Tournament selection
         int sumFitness;//var for Proportionate selection
+
+        int itemNumberLimit;//var for Hybrid improvement
 
         public Generation(int n, int P, int iterations, int selectMethod, int imprMethod=2)
         {
@@ -63,9 +65,8 @@ namespace laba4
                 }               
             }        
             else if(this.selectMethod == SelectionMethod.Proportionate)
-            {
                 sumFitness = CalcFinessSum();
-            }
+            itemNumberLimit = (int)(n / 3);
         }
         private void CreateInitialPopulation(int n)
         {
@@ -101,7 +102,6 @@ namespace laba4
                     child1 = LocalImprovement(child1);
                     AddChildToPopulation(child1);
                 }
-
                 // for the second child
                 if (child2.P <= MaxWeight)//check if alive
                 {
@@ -116,20 +116,14 @@ namespace laba4
             switch (selectMethod)
             {
                 case SelectionMethod.Tournament:
-                    {
-                        S_Tournament(out parent1, out parent2);
-                        break;
-                    }
-                case SelectionMethod.BestAndRandom:
-                    {
+                    S_Tournament(out parent1, out parent2);
+                        break;          
+                case SelectionMethod.BestAndRandom:                  
                         S_BestAndRandom(out parent1, out parent2);
-                        break;
-                    }
-                case SelectionMethod.Proportionate:
-                    {
+                        break;              
+                case SelectionMethod.Proportionate:               
                         S_Proportionate(out parent1, out parent2);
                         break;
-                    }
                 default:
                     {
                         parent1 = _currPopulation.ElementAt(0).Value;
@@ -313,10 +307,13 @@ namespace laba4
             }
             return childImproved;
         }
-
         private Creature LI_Hybrid(Creature child)
         {
-            const double LIMIT = 0.5;
+            double LIMIT;
+            if (child.ItemNumber < itemNumberLimit)
+                LIMIT = 0.85;
+            else
+                LIMIT = 0.15;
             Random rnd= new Random();
             if (rnd.NextDouble() < LIMIT)
                 return LI_Superset(child);

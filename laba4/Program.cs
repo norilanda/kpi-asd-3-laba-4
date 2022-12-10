@@ -1,8 +1,8 @@
 ﻿using laba4;
 using laba4.Testing;
 
-int n = 20;
-int P = 50;
+int n = 100;
+int P = 250;
 int iterations = 1000;
 Item.vMin = 2; Item.vMax = 30;
 Item.wMin = 1; Item.wMax = 25;

@@ -13,9 +13,11 @@ namespace laba4
         protected bool[] _chromosome;
         protected int _F; //value
         protected int _P; //weight
+        private int _itemNumber;    // var to decide which local improvment method to use
 
         public int F => _F;
         public int P => _P;
+        public int ItemNumber => _itemNumber;
         public bool[] Chromosome => _chromosome;
         public Creature(bool[] chromosome)
         {
@@ -27,21 +29,9 @@ namespace laba4
                 {
                     _F += allItems[i].Value;
                     _P += allItems[i].Weight;
+                    _itemNumber++;
                 }                
             }
-        }   
-        public void CalcPAndF()
-        {
-            _F = 0;
-            _P = 0;
-            for (int i = 0; i < _chromosome.Length; i++)
-            {
-                if (_chromosome[i])
-                {
-                    _F += allItems[i].Value;
-                    _P += allItems[i].Weight;
-                }
-            }
-        }
+        }  
     }
 }
